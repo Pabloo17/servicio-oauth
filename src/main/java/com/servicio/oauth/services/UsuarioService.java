@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 // interfaz propia de spring security que obtiene el usuario a partir de su nombre
 @Slf4j
 @Service
-public class UsuarioService implements UserDetailsService {
+public class UsuarioService implements IUsuarioService, UserDetailsService {
 
   @Autowired private UsuarioFeignClient client;
 
@@ -51,5 +51,11 @@ public class UsuarioService implements UserDetailsService {
         true,
         true,
         authorities);
+  }
+
+  @Override
+  public Usuario findByUserName(String username) {
+
+    return client.findByUserName(username);
   }
 }
