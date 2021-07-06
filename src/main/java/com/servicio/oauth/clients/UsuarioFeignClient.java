@@ -9,5 +9,5 @@ import com.servicio.commons.models.entity.Usuario;
 public interface UsuarioFeignClient {
 
   @GetMapping("/usuarios/search/buscar-username")
-  public Usuario findByUserName(@RequestParam String username);
+  public Usuario findByUserName(@RequestParam String nombre);
 }
