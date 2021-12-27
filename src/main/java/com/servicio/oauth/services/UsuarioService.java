@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.servicio.commons.models.entity.Usuario;
 import com.servicio.oauth.clients.UsuarioFeignClient;
+import brave.Tracer;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 public class UsuarioService implements IUsuarioService, UserDetailsService {
 
   @Autowired private UsuarioFeignClient client;
+
+  @Autowired private Tracer tracer;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -49,8 +52,11 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
           true,
           authorities);
     } catch (FeignException e) {
-      log.error("Error en el login, no existe el usuario '" + username + "' en el sistema");
 
+      String error = "Error en el login, no existe el usuario '" + username + "' en el sistema";
+      log.error(error);
+
+      tracer.currentSpan().tag("error.mensaje", error.concat(": ").concat(e.getMessage()));
       throw new UsernameNotFoundException(
           "Error en el login, no existe el usuario '" + username + "' en el sistema");
     }
